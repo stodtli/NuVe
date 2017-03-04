@@ -53,6 +53,45 @@ class Parser(object):
         if not (os.path.isfile(config_file_name) and os.access(config_file_name, os.R_OK)):
             raise IOError('file "' + config_file_name + '" does not exist or cannot be accessed')
 
-        import ConfigParser
-        cp = ConfigParser.ConfigParser()
+        # ok seems safe to proceed to reading the config file
+        import configparser
+        cp = configparser.ConfigParser()
         cp.read(config_file_name)
+
+        sections_found = cp.sections()
+        # the config file must have the correct case. sorry.
+        # DO NOT IMPLEMENT: sections_found = list(map(str.lower,sections_found))
+
+        # first, make sure that the required sections are present (and ignore any others)
+        sections = ["equation", "parameters", "spatial_coord_names", "time_coord_name"]
+        if not ( len( set(cp.sections()) & set(sections) ) == len(sections) ):
+            raise IOError("Improper config file. Section titles must be exactly " + str(sections))
+
+        # read in equation
+        if ("equation" not in cp["equation"].keys()):
+            raise IOError("Improper config file: missing equation")
+        self._eqn_string = cp["equation"]["equation"]
+
+        # set field_names to an empty dictionary; now we will populate it with the parameters etc.
+        self._field_names = {}
+        self._parameters = {}
+
+        # read in parameters
+        for key in cp["parameters"]:
+            try:
+                param_val = cp["parameters"].getfloat(key)
+                self._parameters[key] = param_val
+            except ValueError:
+                param_str = cp["parameters"][key]
+                self._field_names[key] = param_str
+
+
+        # read in spatial coordinate names
+        self._spatial_coords = cp["spatial_coord_names"].keys()
+        self._field_names.update(cp["spatial_coord_names"])
+
+        # read in time coordinate name
+        if (len(cp["time_coord_name"].keys()) > 1):
+            raise IOError("Improper config file: must have at most 1 time coordinate")
+        self._time_coord = list(cp["time_coord_name"].keys())[0]
+        self._field_names.update(cp["time_coord_name"])
