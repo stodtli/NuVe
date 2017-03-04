@@ -41,9 +41,9 @@ class TestParser(unittest.TestCase):
         # try on a good file
         p = Parser("example_config_01.ini")
         assert(p._parameters == {"nu": 1.0})
-        assert(p._field_names ==  {"mu":"MU","x":"X1","t":"T"})
+        assert(p._field_names ==  {"mu":"MU","x":"X1","y":"Y1","t":"T"})
         assert(p._eqn_string == "D[u,{x,2}] = mu * nu * D[u,t]")
-        assert(set(p._spatial_coords) == set(["x"]))
+        assert(p._spatial_coords == ["y","x"])
         assert(p._temporal_coord == "t")
 
 
