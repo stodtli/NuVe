@@ -63,7 +63,7 @@ class Parser(object):
         # DO NOT IMPLEMENT: sections_found = list(map(str.lower,sections_found))
 
         # first, make sure that the required sections are present (and ignore any others)
-        sections = ["equation", "parameters", "spatial_coord_names", "temporal_coord_name"]
+        sections = ["equation", "parameters", "spatial_coord_names", "spatial_coord_ordering","temporal_coord_name"]
         if not ( len( set(cp.sections()) & set(sections) ) == len(sections) ):
             raise IOError("Improper config file. Section titles must be exactly " + str(sections))
 
@@ -86,12 +86,35 @@ class Parser(object):
                 self._field_names[key] = param_str
 
 
-        # read in spatial coordinate names
-        self._spatial_coords = cp["spatial_coord_names"].keys()
-        self._field_names.update(cp["spatial_coord_names"])
-
         # read in time coordinate name
         if (len(cp["temporal_coord_name"].keys()) > 1):
             raise IOError("Improper config file: must have at most 1 time coordinate")
         self._temporal_coord = list(cp["temporal_coord_name"].keys())[0]
         self._field_names.update(cp["temporal_coord_name"])
+
+        # read in spatial coordinate names and ordering
+        spatial_coords_unordered = cp["spatial_coord_names"].keys()
+        if ("spatial_coord_ordering" not in cp["spatial_coord_ordering"].keys()):
+            raise IOError("Improper config file: missing spatial_coord_ordering")
+        spatial_coord_ordering_str = cp["spatial_coord_ordering"]["spatial_coord_ordering"].strip()
+        spatial_coord_ordering = list(map(str.strip,spatial_coord_ordering_str.split(",")))
+        if (set(spatial_coord_ordering) != set(spatial_coords_unordered)):
+            raise IOError("Improper config file: spatial_coord_ordering does not match spatial_coords")
+        self._spatial_coords = spatial_coord_ordering
+        self._field_names.update(cp["spatial_coord_names"])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
