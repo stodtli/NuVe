@@ -19,7 +19,7 @@ class Parser(object):
 
         # time coordinate name
         # example: "t"
-        self._time_coord = None
+        self._temporal_coord = None
 
         # combined data dictionary of all variables and coords
         # example: {"x":data, "t":data, "u":data}
@@ -27,7 +27,7 @@ class Parser(object):
 
         # maximum time derivative order (d/dt=1)
         # example: 1
-        self._time_deriv_order = None
+        self._temporal_deriv_order = None
 
         # list of derivatives to pass to DMatrix
         # example: ["x","t"]
@@ -63,7 +63,7 @@ class Parser(object):
         # DO NOT IMPLEMENT: sections_found = list(map(str.lower,sections_found))
 
         # first, make sure that the required sections are present (and ignore any others)
-        sections = ["equation", "parameters", "spatial_coord_names", "time_coord_name"]
+        sections = ["equation", "parameters", "spatial_coord_names", "temporal_coord_name"]
         if not ( len( set(cp.sections()) & set(sections) ) == len(sections) ):
             raise IOError("Improper config file. Section titles must be exactly " + str(sections))
 
@@ -91,7 +91,7 @@ class Parser(object):
         self._field_names.update(cp["spatial_coord_names"])
 
         # read in time coordinate name
-        if (len(cp["time_coord_name"].keys()) > 1):
+        if (len(cp["temporal_coord_name"].keys()) > 1):
             raise IOError("Improper config file: must have at most 1 time coordinate")
-        self._time_coord = list(cp["time_coord_name"].keys())[0]
-        self._field_names.update(cp["time_coord_name"])
+        self._temporal_coord = list(cp["temporal_coord_name"].keys())[0]
+        self._field_names.update(cp["temporal_coord_name"])
