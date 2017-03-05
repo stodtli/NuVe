@@ -53,6 +53,7 @@ class TestParser(unittest.TestCase):
     # Ensure that the equation is parsed properly...
     def testEquationParser(self):
         p = Parser("example_config_02.ini")
+        assert(set(p._derivs_needed) == set(["x","t"]))
         print(p._eqn_string)
         print(p._eqn_parsed)
 

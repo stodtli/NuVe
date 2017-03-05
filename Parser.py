@@ -134,11 +134,12 @@ class Parser(object):
         # match {x,2} and x
         Dvars_re = "({\s*(" + vars_re + ")\s*,\s*([0-9]+)\s*}|" + vars_re + ")"
 
-        # TODO: right now this prevents any variabls from having a name with capital D in it.
+        # TODO: right now this prevents any variables from having a name with capital D in it.
         # This regex should be improved so that that is all right.
         Deriv_re_str ="D\[([^,D]*?),\s*" + Dvars_re + "\s*\]"
 
-        # replace all derivatives with coded versions
+        derivs_needed = []
+        # replace all derivatives with coded versions AND find what derivatives are needed
         code_equation = equation
         Deriv_search = True
         while(Deriv_search):
@@ -153,6 +154,8 @@ class Parser(object):
                 else:
                     var = internal_groups[2]
                     order = int(internal_groups[3])
+                if (var not in derivs_needed):
+                    derivs_needed.append(var)
                 #print("::::  Match  ::::")
                 #print(matched_str)
                 #print(derivand + " ::: " + var + " ::: " + str(order))
@@ -181,6 +184,7 @@ class Parser(object):
             code_equation = re.sub(fieldvar_re, fieldvar_str, code_equation)
 
         #print(code_equation)
+        self._derivs_needed = derivs_needed
         self._eqn_parsed = code_equation
 
 
