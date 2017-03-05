@@ -41,6 +41,11 @@ class Parser(object):
         # example: 'matmul(deriv["x"][2], data["u"]) - nu * matmul(deriv["t"][1], data["u"])'
         self._eqn_parsed = None
 
+        # datafile name information
+        self._file_prefix = None
+        self._file_index_digits = None
+        self._file_indices_to_check = None
+
         self.readConfigFile(config_file_name)
         self.parseEquation()
         self.countTemporalDerivOrder()
@@ -66,7 +71,7 @@ class Parser(object):
         # DO NOT IMPLEMENT: sections_found = list(map(str.lower,sections_found))
 
         # first, make sure that the required sections are present (and ignore any others)
-        sections = ["equation", "parameters", "spatial_coord_names", "spatial_coord_ordering","temporal_coord_name"]
+        sections = ["equation", "parameters", "spatial_coord_names", "spatial_coord_ordering","temporal_coord_name","files_to_read"]
         if not ( len( set(cp.sections()) & set(sections) ) == len(sections) ):
             raise IOError("Improper config file. Section titles must be exactly " + str(sections))
 
@@ -88,7 +93,6 @@ class Parser(object):
                 param_str = cp["parameters"][key]
                 self._field_names[key] = param_str.strip()
 
-
         # read in time coordinate name
         if (len(cp["temporal_coord_name"].keys()) > 1):
             raise IOError("Improper config file: must have at most 1 time coordinate")
@@ -105,6 +109,17 @@ class Parser(object):
             raise IOError("Improper config file: spatial_coord_ordering does not match spatial_coords")
         self._spatial_coords = spatial_coord_ordering
         self._field_names.update(cp["spatial_coord_names"])
+
+        # read in the data file info
+        required_file_info = ["file_prefix", "file_index_digits", "indices_to_check"]
+        if( len( set(required_file_info) & set(cp["files_to_read"]) ) != len(required_file_info) ):
+            raise IOError("Improper config files: [files_to_read] section must have fields " + str(required_file_info))
+        self._file_prefix = cp["files_to_read"]["file_prefix"]
+        self._file_index_digits = cp["files_to_read"].getint("file_index_digits")
+        fitc_str = cp["files_to_read"]["indices_to_check"].strip()
+        fitc = list(map(int,fitc_str.split(",")))
+        self._file_indices_to_check = fitc
+
 
 
     def parseEquation(self):

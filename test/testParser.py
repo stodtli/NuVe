@@ -46,6 +46,10 @@ class TestParser(unittest.TestCase):
         assert(p._spatial_coords == ["y","x"])
         assert(p._temporal_coord == "t")
 
+        assert(p._file_prefix == "run_")
+        assert(p._file_index_digits == 3)
+        assert(p._file_indices_to_check == [1,50,70])
+
     # Ensure that the equation is parsed properly...
     def testEquationParser(self):
         p = Parser("example_config_02.ini")
