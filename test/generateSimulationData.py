@@ -7,7 +7,7 @@ u = lambda x, t : 4 * np.exp(-(np.pi**2)*t) * np.sin(np.pi * x)
 
 # discretize domain
 x = np.linspace(0, 1, num=100)
-dt = 1E-2
+dt = 1E-4
 t_start = [0.01, 0.1, 0.5]
 
 # generate correct solution and write it to file
