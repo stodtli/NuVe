@@ -1,6 +1,7 @@
 from Verifier import Verifier
 import numpy as np
 from matplotlib import pyplot
+from matplotlib import cm
 
 # run 1D simulation
 def test1DConfig():
@@ -34,13 +35,13 @@ def test2DConfig():
     ubad = vbad._data["u"]
 
     print("2D MAX ERROR: ",str(np.amax(np.abs(vgood._output))))
-    contourPlotVector(x,y,t,u,nobc=False,tstep=1)
-    contourPlotVector(x,y,t,ubad,nobc=False,tstep=1)
-    contourPlotVector(x,y,t,np.abs(vbad._output))
+    contourPlotVector(x,y,t,u,title="Correct data\nDynamic heat equation in isotropic material",nobc=False,tstep=1,filename="correct_data_2D.png")
+    contourPlotVector(x,y,t,ubad,title="Incorrect data\nDynamic heat equation in isotropic material",nobc=False,tstep=1,filename="incorrect_data_2D.png")
+    contourPlotVector(x,y,t,np.abs(vbad._output),title="Identified error",colormap=cm.afmhot,filename="error_2D.png")
     pyplot.show()
 
 
-def contourPlotVector(x,y,t,vec,nobc=True,tstep=0):
+def contourPlotVector(x,y,t,vec,title="",nobc=True,tstep=0,colormap=cm.jet,filename=""):
     pyplot.figure()
     reshaped_output = np.reshape(vec, (len(x)-2*nobc,len(y)-2*nobc,len(t)), order = 'F')
     reshaped_output = reshaped_output[:,:,tstep]
@@ -51,8 +52,13 @@ def contourPlotVector(x,y,t,vec,nobc=True,tstep=0):
         xv,yv = np.meshgrid(x,y)
 
     #xdouble = np.concatenate((x,1+x))
-    cp = pyplot.contourf(xv,yv,reshaped_output)
+    cp = pyplot.contourf(xv,yv,reshaped_output,100, cmap=colormap)
+    pyplot.xlabel("x")
+    pyplot.ylabel("y")
+    pyplot.title(title)
     pyplot.colorbar(cp)
+    if (filename != ""):
+        pyplot.savefig("plots/" + filename)
 
 test1DConfig()
 test2DConfig()
