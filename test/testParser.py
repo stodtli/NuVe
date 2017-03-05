@@ -41,11 +41,16 @@ class TestParser(unittest.TestCase):
         # try on a good file
         p = Parser("example_config_01.ini")
         assert(p._parameters == {"nu": 1.0})
-        assert(p._field_names ==  {"mu":"MU","x":"X1","y":"Y1","t":"T"})
-        assert(p._eqn_string == "D[u,{x,2}] = mu * nu * D[u,t]")
+        assert(p._field_names ==  {"mu":"MU","x":"X1","y":"Y1","t":"T","u":"U"})
+        assert(p._eqn_string == "D[u,{x,2}] - mu * nu * D[u,t]")
         assert(p._spatial_coords == ["y","x"])
         assert(p._temporal_coord == "t")
 
+    # Ensure that the equation is parsed properly...
+    def testEquationParser(self):
+        p = Parser("example_config_02.ini")
+        print(p._eqn_string)
+        print(p._eqn_parsed)
 
 if __name__ == '__main__':
     unittest.main()
