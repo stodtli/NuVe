@@ -1,9 +1,9 @@
 
 
-import Parser
+from Parser import Parser
 from DataImporter import ColumnMajorImporter
 
-class Verifyer:
+class Verifier:
     def __init__(self, config_file_name):
 
         # confiuration file
