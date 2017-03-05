@@ -8,10 +8,12 @@ y = np.linspace(0.0, 1.0, num = 5, endpoint = True)
 # data first snapshot
 t1 = 0.0
 u1 = np.arange(0, x.size*y.size,).reshape(x.size, y.size, order = 'F')
+print(u1)
 
 # data second snapshot
 t2 = 0.02
 u2 = np.arange(x.size*y.size, 2*x.size*y.size).reshape(x.size, y.size, order = 'F')
+print(u2)
 
 # write snapshots to hdf5 file
 f1 = h5py.File('testrun_001.hdf5', 'w')
@@ -24,7 +26,7 @@ f1.close()
 f2 = h5py.File('testrun_002.hdf5', 'w')
 f2.create_dataset("X1", data = x)
 f2.create_dataset("X2", data = y)
-f2.create_dataset("t", data = t1)
-f2.create_dataset("u", data = u1)
+f2.create_dataset("t", data = t2)
+f2.create_dataset("u", data = u2)
 f2.close()
 
