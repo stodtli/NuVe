@@ -41,6 +41,12 @@ class TestDMatrix(unittest.TestCase):
         self.assertArraysAlmostEqual(Dmats[1],correct1,places=3)
         self.assertArraysAlmostEqual(Dmats[2],correct2,places=3)
 
+    def testUpgradeMatrix(self):
+        import numpy as np
+        DM = FiniteDifference()
+
+        A = np.array([[1,2],[3,4]])
+        print(DM.upgradeMatrix(A,"x",["y","x","t"],{"x":2,"y":3,"t":4}))
 
 if __name__ == '__main__':
     unittest.main()
