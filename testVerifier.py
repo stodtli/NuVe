@@ -22,31 +22,37 @@ def test1DConfig():
 
 # run 2D simulation
 def test2DConfig():
-    v = Verifier("test/simulation2D_config.ini")
-    print(v._parser._eqn_parsed)
-    v.verify()
+    vgood = Verifier("test/simulation2D_config.ini")
+    vgood.verify()
+    vbad = Verifier("test/simulation2Dcorrupt_config.ini")
+    vbad.verify()
 
-    x = v._data["x"]
-    y = v._data["y"]
-    t = v._data["t"]
-    u = v._data["u"]
-    #d2x = v._derivs["x"][2]
-    #dt  = v._derivs["t"][1]
-    #uxx = d2x @ u
-    #ut = dt @ u
+    x = vgood._data["x"]
+    y = vgood._data["y"]
+    t = vgood._data["t"]
+    u = vgood._data["u"]
+    ubad = vbad._data["u"]
 
-    print("2D MAX ERROR: ",str(np.amax(np.abs(v._output))))
+    print("2D MAX ERROR: ",str(np.amax(np.abs(vgood._output))))
+    contourPlotVector(x,y,t,u,nobc=False,tstep=1)
+    contourPlotVector(x,y,t,ubad,nobc=False,tstep=1)
+    contourPlotVector(x,y,t,np.abs(vbad._output))
+    pyplot.show()
 
-    reshaped_output = np.reshape(v._output, (len(x)-2,len(y)-2,len(t)))
-    reshaped_output = reshaped_output[:,:,1]
 
-    xv,yv = np.meshgrid(x[1:-1],y[1:-1])
+def contourPlotVector(x,y,t,vec,nobc=True,tstep=0):
+    pyplot.figure()
+    reshaped_output = np.reshape(vec, (len(x)-2*nobc,len(y)-2*nobc,len(t)), order = 'F')
+    reshaped_output = reshaped_output[:,:,tstep]
+
+    if nobc:
+        xv,yv = np.meshgrid(x[1:-1],y[1:-1])
+    else:
+        xv,yv = np.meshgrid(x,y)
 
     #xdouble = np.concatenate((x,1+x))
     cp = pyplot.contourf(xv,yv,reshaped_output)
     pyplot.colorbar(cp)
-    pyplot.show()
-
 
 test1DConfig()
 test2DConfig()
