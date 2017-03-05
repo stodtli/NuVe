@@ -2,14 +2,14 @@ import numpy as np
 import h5py
 
 # input parameters
-run_name = "testrun"
+run_name = "corrupted_data"
+nr_digits = 4
 start_nr = 1
 temp_deriv_order = 1
-spatial_coords = ["x", "y"]
+spatial_coords = "x"
 temporal_coord = "t"
 field_names = {
-        "x": "X1",
-        "y": "X2",
+        "x": "x",
         "u": "u",
         "t": "t",
         }
@@ -18,7 +18,7 @@ field_names = {
 data = {}
 
 # first file: read time invariant coordinates and temporal data
-file_name = run_name + "_" + str(start_nr).zfill(3) + ".hdf5"
+file_name = run_name + "_" + str(start_nr).zfill(nr_digits) + ".hdf5"
 print(file_name)
 with h5py.File(file_name, "r") as f:
     for field in field_names.keys():
@@ -26,7 +26,7 @@ with h5py.File(file_name, "r") as f:
 
 # consecutive files: only read temporal data
 for file_nr in range(start_nr+1, start_nr+temp_deriv_order+1):
-    file_name = run_name + "_" + str(file_nr).zfill(3) + ".hdf5"
+    file_name = run_name + "_" + str(file_nr).zfill(nr_digits) + ".hdf5"
     print(file_name)
     with h5py.File(file_name, "r") as f:
         for field in field_names.keys():
@@ -36,7 +36,6 @@ for file_nr in range(start_nr+1, start_nr+temp_deriv_order+1):
 
 # check results
 print(data["x"])
-print(data["y"])
 print(data["u"])
 print(data["t"])
 
