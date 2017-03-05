@@ -43,6 +43,7 @@ class Parser(object):
 
         self.readConfigFile(config_file_name)
         self.parseEquation()
+        self.countTemporalDerivOrder()
 
 
     def readConfigFile(self, config_file_name):
@@ -166,6 +167,70 @@ class Parser(object):
 
         #print(code_equation)
         self._eqn_parsed = code_equation
+
+
+    def countInteriorTemporalDerivs(self, substr, level):
+        import re
+
+        # to make things easier, replace all commas in {x,3} with semicolons
+        Dcomma_re = "({[^,]*),(\s*[0-9]+\s*})"
+        substr = re.sub(Dcomma_re, r"\1;\2",substr)
+
+        # match t and {t,3}
+        Dvars_re = "({\s*" + self._temporal_coord + "\s*;\s*([0-9]+)\s*}|" + self._temporal_coord + ")"
+        # inD tells whether or not we're in an outer derivative
+        inD = False
+        parcount = 0
+        subsubs = []
+        subsub = ""
+        for c in substr:
+            if (not inD):
+                if c == "D":
+                    inD = True
+            else:
+                subsub += c
+                if c == "[":
+                    parcount += 1
+                if c == "]":
+                    parcount -= 1
+                    if parcount == 0:
+                        inD = False
+                        subsubs.append(subsub)
+                        subsub = ""
+
+        new_sub_tuples = []
+        for ss in subsubs:
+            this_level = level
+            ss = ss[1:-1]
+            ss_split = ss.split(",")
+            derivand = ",".join(ss_split[0:-1])
+            varstr = ss_split[-1]
+
+            Deriv_search = re.search(Dvars_re, varstr)
+            if (Deriv_search):
+                #matched_str = Deriv_search.group(0)
+                internal_groups = Deriv_search.groups()
+                if (internal_groups[1] == None):
+                    this_level += 1
+                else:
+                    this_level += int(internal_groups[1])
+            new_sub_tuples.append( (derivand, this_level) )
+
+        max_level = level
+        for (s,l) in new_sub_tuples:
+            this_level = self.countInteriorTemporalDerivs(s,l)
+            #print(level,s,this_level)
+            if ( this_level > max_level ):
+                max_level = this_level
+
+        return max_level
+
+    def countTemporalDerivOrder(self):
+        if (self._eqn_string == None):
+            raise ValueError("Equation string not yet initialized (did you call readConfigFile?)")
+        equation = self._eqn_string
+
+        self._temporal_deriv_order = self.countInteriorTemporalDerivs(equation,0)
 
 
 
