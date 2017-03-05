@@ -2,6 +2,8 @@
 
 from Parser import Parser
 from DataImporter import ColumnMajorImporter
+from DMatrix import FiniteDifference
+import numpy as np
 
 class Verifier:
     def __init__(self, config_file_name):
@@ -19,5 +21,11 @@ class Verifier:
                 self._parser._file_index_digits, self._parser._field_names,
                 self._parser._spatial_coords, self._parser._temporal_coord)
 
+        self._DM = FiniteDifference()
+        self._derivs = self._DM.constructDerivatives(self._parser._derivs_needed, self._parser._spatial_coords, self._parser._temporal_coord, self._data)
 
+        deriv = self._derivs
+        data = self._data
+
+        self._output = eval(self._parser._eqn_parsed)
 
