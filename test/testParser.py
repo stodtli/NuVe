@@ -52,5 +52,22 @@ class TestParser(unittest.TestCase):
         print(p._eqn_string)
         print(p._eqn_parsed)
 
+    def testCountTemporalDerivOrder(self):
+        p = Parser("example_config_01.ini")
+        assert(p._temporal_deriv_order == 1)
+
+        l=p.countInteriorTemporalDerivs("D[D[nu * D[u,{t,3}],{x,2}],t] - mu * nu * D[u,t] + D[u^2,{t,2}]",0)
+        assert(l==4)
+        l=p.countInteriorTemporalDerivs("D[D[nu * D[u,{t,1}],{x,2}],t] - mu * nu * D[u,t] + D[u^2,{t,2}]",0)
+        assert(l==2)
+        l=p.countInteriorTemporalDerivs("D[D[nu * D[u,{y,1}],{x,2}],t] - mu * nu * D[u,t] + D[u^2,{t,2}]",0)
+        assert(l==2)
+        l=p.countInteriorTemporalDerivs("D[{t,17},x] + D[D[nu * D[u,{y,1}],{x,2}],t] - mu * nu * D[u,t]",0)
+        assert(l==1)
+        l=p.countInteriorTemporalDerivs("D[{t,17},x] + D[D[nu * D[u,{y,1}],{x,2}],y] - mu * nu * D[u,t]",0)
+        assert(l==1)
+        l=p.countInteriorTemporalDerivs("D[D[D[u,t]+D[(v*x+t),t] - nu * D[u,{y,1}],{x,2}],t] - mu * nu * D[u,t]",0)
+        assert(l==2)
+
 if __name__ == '__main__':
     unittest.main()
