@@ -1,3 +1,4 @@
+
 import numpy as np
 import h5py
 from abc import ABCMeta, abstractmethod
@@ -15,11 +16,8 @@ class ColumnMajorImporter(DataImporter):
     # imports data from hdf5 file
     def importData(self, run_name, start_nr, temp_deriv_order, nr_digits,
             field_names, spatial_coords, temporal_coord):
-            # data, field_names, spatial_coords, temporal_coord):
 
-        # previous data not needed -> clean
         data = {}
-
         # first file: read time invariant coordinate and temporal data
         file_name = run_name + "_" + str(start_nr).zfill(nr_digits) + ".hdf5"
         print("reading from " + str(file_name))
@@ -28,6 +26,7 @@ class ColumnMajorImporter(DataImporter):
                 # align data in column-major order 'F' (i.e. first coordinate
                 # varies fastest)
                 data[field] = np.array(f[field_names[field]]).flatten('F')
+
         # consecutive files: only read temporal data
         for file_nr in range(start_nr+1, start_nr+temp_deriv_order+1):
             file_name = run_name + "_" + str(file_nr).zfill(nr_digits) + ".hdf5"
