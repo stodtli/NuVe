@@ -161,9 +161,13 @@ class Parser(object):
                 #print(derivand + " ::: " + var + " ::: " + str(order))
 
                 # construct the parsed code version of the derivative operators
-                code_derivop = ""
-                for j in range(0,order):
-                    code_derivop += "deriv[\"%s\"] @ " % var
+                ## this old method was just to multiply single derivatives together
+                ##code_derivop = ""
+                ##for j in range(0,order):
+                    ##code_derivop += "deriv[\"%s\"] @ " % var
+                # now we should instead explicitly call nth derivatives
+                code_derivop = "deriv[\"%s\"][%d] @ " % (var,order)
+
                 code_version = "( %s ( %s ) )" % (code_derivop, derivand)
                 #print(code_version)
 
