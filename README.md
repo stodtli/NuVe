@@ -1,4 +1,4 @@
-Text for project submission
+NuVe project description
 ===========================
 
 According to a study commissioned by the Department of Commerce's National Institute of Standards and Technology (NIST), software bugs are so prevalent that they cost the US economy $59.1 billion annually, or about 0.6% of the gross domestic income [1].
