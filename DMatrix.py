@@ -1,6 +1,7 @@
 import numpy as np
 import scipy as sp
 from scipy.special import factorial
+from scipy import sparse
 from numpy.linalg import inv
 import math
 from abc import ABCMeta, abstractmethod
@@ -57,7 +58,8 @@ class FiniteDifference(DMatrix):
         for d in dims:
             N *= d
 
-        M = np.zeros((N,N))
+        #M = np.zeros((N,N))
+        M = sparse.lil_matrix((N, N))
 
         # convert a set of paired indices (one pair for each coord) to a master coordinate pair
         def upgradeIndex(idict):
