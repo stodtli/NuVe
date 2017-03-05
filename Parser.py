@@ -83,13 +83,13 @@ class Parser(object):
                 self._parameters[key] = param_val
             except ValueError:
                 param_str = cp["parameters"][key]
-                self._field_names[key] = param_str
+                self._field_names[key] = param_str.strip()
 
 
         # read in time coordinate name
         if (len(cp["temporal_coord_name"].keys()) > 1):
             raise IOError("Improper config file: must have at most 1 time coordinate")
-        self._temporal_coord = list(cp["temporal_coord_name"].keys())[0]
+        self._temporal_coord = list(cp["temporal_coord_name"].keys())[0].strip()
         self._field_names.update(cp["temporal_coord_name"])
 
         # read in spatial coordinate names and ordering
