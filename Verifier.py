@@ -15,7 +15,7 @@ class Verifier:
         # import data from hdf file
         self._importer = ColumnMajorImporter()
         self._data = self._importer.importData(self._parser._file_prefix,
-                self._parser._file_indices_to_check, self._parser._temporal_deriv_order,
+                self._parser._file_indices_to_check[0], self._parser._temporal_deriv_order,
                 self._parser._file_index_digits, self._parser._field_names,
                 self._parser._spatial_coords, self._parser._temporal_coord)
 
