@@ -138,7 +138,7 @@ class Parser(object):
         # This regex should be improved so that that is all right.
         Deriv_re_str ="D\[([^,D]*?),\s*" + Dvars_re + "\s*\]"
 
-        derivs_needed = []
+        derivs_needed = {}
         # replace all derivatives with coded versions AND find what derivatives are needed
         code_equation = equation
         Deriv_search = True
@@ -155,15 +155,22 @@ class Parser(object):
                     var = internal_groups[2]
                     order = int(internal_groups[3])
                 if (var not in derivs_needed):
-                    derivs_needed.append(var)
+                    derivs_needed[var] = order
+                else:
+                    if order > derivs_needed[var]:
+                        derivs_needed[var] = order
                 #print("::::  Match  ::::")
                 #print(matched_str)
                 #print(derivand + " ::: " + var + " ::: " + str(order))
 
                 # construct the parsed code version of the derivative operators
-                code_derivop = ""
-                for j in range(0,order):
-                    code_derivop += "deriv[\"%s\"] @ " % var
+                ## this old method was just to multiply single derivatives together
+                ##code_derivop = ""
+                ##for j in range(0,order):
+                    ##code_derivop += "deriv[\"%s\"] @ " % var
+                # now we should instead explicitly call nth derivatives
+                code_derivop = "deriv[\"%s\"][%d] @ " % (var,order)
+
                 code_version = "( %s ( %s ) )" % (code_derivop, derivand)
                 #print(code_version)
 
