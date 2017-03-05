@@ -35,6 +35,13 @@ for t in t_start:
 run_name = "corrupted2D_data"
 nr_digits = 4
 for t in t_start:
+
+    corrupt_u = u(xv,yv,t+dt)
+    region_mean = np.mean(corrupt_u[10:20,20:30])
+    corrupt_u[10:20,20:30] = 0.5*corrupt_u[10:20,20:30] + 0.5*region_mean
+    #-0.01*np.random.random(x.size*y.size).reshape(x.size, y.size, order = 'F')
+
+
     file_nr = int(t / dt)
     file_name = run_name + "_" + str(file_nr).zfill(nr_digits) + ".hdf5"
     with h5py.File(file_name, "w") as f:  # data at t
@@ -47,6 +54,6 @@ for t in t_start:
         f.create_dataset("x", data = x)
         f.create_dataset("y", data = y)
         f.create_dataset("t", data = t+dt)
-        f.create_dataset("u", data = u(xv,yv,t+dt)-0.01*np.random.random(x.size*y.size).reshape(x.size, y.size, order = 'F'))
+        f.create_dataset("u", data = corrupt_u)
 
 
