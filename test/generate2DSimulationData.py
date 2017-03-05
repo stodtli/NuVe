@@ -38,7 +38,7 @@ for t in t_start:
 
     corrupt_u = u(xv,yv,t+dt)
     region_mean = np.mean(corrupt_u[10:20,20:30])
-    corrupt_u[10:20,20:30] = 0.5*corrupt_u[10:20,20:30] + 0.5*region_mean
+    corrupt_u[10:20,20:30] = 0.95*corrupt_u[10:20,20:30] + 0.05*region_mean
     #-0.01*np.random.random(x.size*y.size).reshape(x.size, y.size, order = 'F')
 
 
