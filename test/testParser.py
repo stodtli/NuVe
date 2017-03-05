@@ -1,4 +1,3 @@
-
 import unittest
 
 # add parent folder to path so that we can import modules from up there
@@ -53,7 +52,7 @@ class TestParser(unittest.TestCase):
     # Ensure that the equation is parsed properly...
     def testEquationParser(self):
         p = Parser("example_config_02.ini")
-        assert(set(p._derivs_needed) == set(["x","t"]))
+        assert(p._derivs_needed == {"t":3,"x":2})
         print(p._eqn_string)
         print(p._eqn_parsed)
 
