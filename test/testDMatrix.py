@@ -46,7 +46,18 @@ class TestDMatrix(unittest.TestCase):
         DM = FiniteDifference()
 
         A = np.array([[1,2],[3,4]])
-        print(DM.upgradeMatrix(A,"x",["y","x","t"],{"x":2,"y":3,"t":4}))
+        #print(DM.upgradeMatrix(A,"x",["y","x","t"],{"x":2,"y":3,"t":4}))
+
+    def testFullFinDiff(self):
+        DM = FiniteDifference()
+        spatial_coords = ["x","y"]
+        temporal_coord = "t"
+        data = {"x":[0,1.1,1.2,3.82], "y":[0,1,2], "t":[0,1]}
+        derivatives_needed = {"x":2,"t":1}
+        deriv = DM.constructDerivatives(derivatives_needed, spatial_coords, temporal_coord, data)
+        #print(deriv["x"][1])
+        #print(deriv["x"][2])
+        #print(deriv["t"][1])
 
 if __name__ == '__main__':
     unittest.main()

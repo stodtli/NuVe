@@ -20,10 +20,23 @@ class FiniteDifference(DMatrix):
     def constructDerivatives(self, derivatives_needed, spatial_coords, temporal_coord, data):
 
         coord_sizes = {}
-        for coord in spatial_coords + [temporal_coord]:
+        all_coords = spatial_coords + [temporal_coord]
+        for coord in all_coords:
             coord_sizes[coord] = len(data[coord])
 
-        return {}
+
+        small_derivs = {}
+        for coord in derivatives_needed:
+            order = derivatives_needed[coord]
+            small_derivs[coord] = self.oneCoordMatrix(data[coord], order)
+
+        full_derivs = {}
+        for coord in small_derivs:
+            full_derivs[coord] = {}
+            for o in small_derivs[coord]:
+                full_derivs[coord][o] = self.upgradeMatrix(small_derivs[coord][o], coord, all_coords, coord_sizes)
+
+        return full_derivs
 
     # given a matrix mat, that represents this_coord (e.g. "x"), upgrade it to the supermatrix.
     # coords is the set of all coords (spatial + temporal)
