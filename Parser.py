@@ -42,6 +42,8 @@ class Parser(object):
         self._eqn_parsed = None
 
         self.readConfigFile(config_file_name)
+        self.parseEquation()
+
 
     def readConfigFile(self, config_file_name):
 
@@ -104,9 +106,66 @@ class Parser(object):
         self._field_names.update(cp["spatial_coord_names"])
 
 
+    def parseEquation(self):
+        if (self._eqn_string == None):
+            raise ValueError("Equation string not yet initialized (did you call readConfigFile?)")
+        import re
+        equation = self._eqn_string
+
+        # all available variables in brackets, e.g. [xyt]
+        vars_re = "[" + "".join(self._spatial_coords) + self._temporal_coord + "]"
+
+        # match {x,2} and x
+        Dvars_re = "({\s*(" + vars_re + ")\s*,\s*([0-9]+)\s*}|" + vars_re + ")"
+
+        # TODO: right now this prevents any variabls from having a name with capital D in it.
+        # This regex should be improved so that that is all right.
+        Deriv_re_str ="D\[([^,D]*?),\s*" + Dvars_re + "\s*\]"
+
+        # replace all derivatives with coded versions
+        code_equation = equation
+        Deriv_search = True
+        while(Deriv_search):
+            Deriv_search = re.search(Deriv_re_str,code_equation)
+            if(Deriv_search):
+                matched_str = Deriv_search.group(0)
+                internal_groups = Deriv_search.groups()
+                derivand = internal_groups[0]
+                if (internal_groups[2] == None):
+                    var = internal_groups[1]
+                    order = 1
+                else:
+                    var = internal_groups[2]
+                    order = int(internal_groups[3])
+                #print("::::  Match  ::::")
+                #print(matched_str)
+                #print(derivand + " ::: " + var + " ::: " + str(order))
+
+                # construct the parsed code version of the derivative operators
+                code_derivop = ""
+                for j in range(0,order):
+                    code_derivop += "deriv[\"%s\"] @ " % var
+                code_version = "( %s ( %s ) )" % (code_derivop, derivand)
+                #print(code_version)
+
+                # substitute the result into code_equation
+                code_equation = code_equation.replace(matched_str, code_version)
+                #print(code_equation)
+                #print("::::End Match::::")
 
 
+        # construct the parsed code version of the entire equation
+        for param in self._parameters.keys():
+            param_val_str = "(" + str(self._parameters[param]) + ")"
+            param_re = "\\b%s\\b" % param
+            code_equation = re.sub(param_re, param_val_str, code_equation)
+        for fieldvar in self._field_names.keys():
+            fieldvar_str = " data[\"%s\"] " % fieldvar
+            fieldvar_re = "(?!\")\\b%s\\b(?!\")" % fieldvar
+            code_equation = re.sub(fieldvar_re, fieldvar_str, code_equation)
 
+        #print(code_equation)
+        self._eqn_parsed = code_equation
 
 
 
