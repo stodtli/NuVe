@@ -11,7 +11,7 @@ dt = 1E-4
 t_start = [0.01, 0.1, 0.5]
 
 # generate correct solution and write it to file
-run_name = "correct_data"
+run_name = "correct1D_data"
 nr_digits = 4
 for t in t_start:
     file_nr = int(t / dt)
@@ -28,7 +28,7 @@ for t in t_start:
 
 
 # generate corrupted simulation data
-run_name = "corrupted_data"
+run_name = "corrupted1D_data"
 nr_digits = 4
 for t in t_start:
     file_nr = int(t / dt)
